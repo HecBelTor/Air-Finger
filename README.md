@@ -10,3 +10,4 @@ Matériel :
  - 2 capteurs ultrasons
  - cables
  
+Objectif : Instrument de musique qui s'adapte à son environnement : mode calibrage/mode boucle/note fréquence éléctronique
