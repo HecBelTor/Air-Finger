@@ -1,0 +1,53 @@
+Code arduino pour le capteur ultrasons :
+L’objectif est de faire un télémètre ( qui permet de mesurer une distance numériquement) puis de gérer les distances avec ça .
+Pour rappelle (ça peut bien passer pour le tpe x) )
+Un ultrason est une onde sonore à haute fréquence. Par haute fréquence j’entends toutes les fréquences sonores inaudibles pour l'oreille humaine, soit celles au-delà de 20 kHz. Elles sont l'opposé des infrasons qui sont les ondes sonores dont la fréquence est inférieure à la plus faible audible pour l'Homme et qui est de 20 Hz. 
+
+Une onde sonore est un phénomène physique de compression et décompression. Lorsqu'une vibration est produite (par n'importe quel objet qui vibre), l'air subit alors une onde de choc qui se traduit en mouvement des atomes. Il y a alors ce phénomène de compression et décompression (des "trous" dans l'air) que des récepteurs dans nos oreilles convertissent en bruit.Plus les compressions sont proches et plus la fréquence est élevée. On parle alors de son aigu. Au contraire, plus les compressions sont éloignées et plus la fréquence est faible, on parle d'un son grave.
+
+les télémètres à ultrasons vibrent à une fréquence de 40 kHz.
+
+Une dernière caractéristique des ondes sonores est leur capacité à être réfléchie par les obstacles. En effet, les ondes sonores ont tendance à "rebondir" sur les obstacles. On entend alors l'onde de départ et un peu plus tard la même avec un retard et une plus faible intensité. C'est exactement le même phénomène qu'un écho dans une pièce vide ou en montagne. L'onde sonore se déplace, rebondit sur les murs lisses et revient à votre oreille avec un retard entre le moment où vous avez parlé et celui où vous l'entendez (et une puissance sonore plus faible). En général, dans le domaine de l'acoustique et de la musique, on cherche à supprimer cette caractéristique en recouvrant les murs de matériaux spéciaux. Cependant, dans le cas d'une mesure de distance, on va exploiter cet effet.
+
+DONC
+Comme dit précédemment, on va tirer parti du fait que l'onde sonore rebondit sur les obstacles et revient souvent vers l’expéditeur. On va aussi exploiter une autre chose connue, sa vitesse !
+
+la vitesse de déplacement d'une onde sonore dans l'air est connue depuis longtemps. Elle est d'environ 340 mètres par seconde à 25 degrés Celsius 
+À partir de là, si on sait quand l'onde est partie et quand on la reçoit de nouveau (après le rebond), on est en mesure de calculer un temps de vol de l'onde. On a alors une durée, une vitesse, et on peut en déduire une distance !
+
+Un peu de math :D ( Attention, Vous entrez dans un espace de type VARGAS ++++ veuillez prendre conscience du risque)
+Comme l'onde fait un aller-retour (le voyage depuis l’émission de l'onde, le rebond, puis le retour sur le récepteur), il faudra diviser le temps de vol par deux pour ne considérer qu'un trajet (l'aller ou le retour). Le calcul sera alors simple. Une vitesse s'exprime par une distance divisée par un temps v=d/t donc la distance sera la vitesse multipliée par le temps d=v×t.
+
+Ce que je vais dire(enfin écrire) maintenant, c’est pour un capteur ultra-sons nommé                   HC-SR04                   
+
+sur la face avant on peut voir l’émetteur US et son récepteur. Ce sont des petites cellules piézo-électriques (La piézoélectricité (du grec πιέζειν, piézein presser, appuyer) est la propriété que possèdent certains corps de se polariser électriquement sous l’action d’une contrainte mécanique et réciproquement de se déformer lorsqu’on leur applique un champ électrique.) qui vont soit vibrer lorsqu'une tension est appliquée (émetteur), soit au contraire produire une tension lorsqu'une vibration est reçue (récepteur).
+Sur la face arrière on trouve plusieurs petits circuits permettant la génération du signal et le traitement de ce dernier.
+Ainsi, un composant va générer une onde de 40 kHz lors d'un "top départ" et la partie restante s’occupera de la mise en forme de la réception (amplification et filtrage) et de mettre en forme cela proprement sur une broche de sortie.
+
+LES BROCHES :
+Il y en a 4 :
+
+Les premières sont VCC et GND qui vont accueillir l'alimentation (respectivement 5V et masse). On trouve ensuite la broche "echo" sur laquelle sera présent le signal de sortie. Enfin, une broche nommée "Trig". Cela signifie "Trigger" soit "déclencheur" ou "gâchette". En mettant cette broche à l’état haut pendant 10µs vous allez déclencher le ping pour la mesure. Un "ping" représente le lancement d'une onde ultrason. Pour reprendre l'exemple de l’écho dans la pièce vide, le ping correspondrait au moment où vous émettez un son en parlant.
+Le signal de sortie est assez simple à exploiter. Il est initialement à 0, puis passe à 1 lorsque le ping est envoyé. Il repasse ensuite à 0 quand l’écho est revenu au récepteur OU s'il n'y a pas de retour durant les 30ms après l'envoi (l'onde est alors considérée perdue).
+
+Les branchements sont eux-même assez simples. Il suffira de relier 5V et GND à leurs broches respectives sur Arduino et mettre "Trig" et "Echo" sur des I/O numériques (8 et 9 par exemple.
+Si vous voulez obtenir la distance en millimètres, il suffira de multiplier par 1000. Mais, nous pouvons aussi optimiser en évitant une opération. Pour cela c'est simple, la ligne calculant le temps en seconde passe de :
+1
+float temps = duree/1000000.0;
+
+
+à
+1
+float temps = duree/1000.0;
+
+
+puisque multiplier la distance par 1000 dans notre situation revient exactement à avoir un temps divisé par le même facteur (pour avoir l'information en centimètres, il aurait fallu utiliser un facteur 100 plutôt que 1000).
+
+Voilà :P tout ça à savoir hein xD
+J’me suis beaucoup inspiré ici 
+
+https://tutoarduino.com/portfolio-items/jouer-une-melodie-avec-son-arduino/
+
+Screen code :
+
+https://gyazo.com/655f1b757468985b483a59cc614142b3
